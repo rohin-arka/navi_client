@@ -9,7 +9,7 @@ module Client
   # login to the navi-cloud and get the authentication token
   #
   def login
-    url = "#{@sso_web_url/oauth/token}"
+    url = "#{@sso_web_url}/oauth/token"
     provider_url = url
     @token = HTTParty.post(provider_url,
                   body: {

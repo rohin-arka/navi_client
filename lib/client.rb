@@ -116,7 +116,10 @@ module Client
 
         # We're out, which means there are some emails ready for us.
         # Go do a search for UNSEEN and fetch them.
-        retrieve_emails(imap, search_condition, folder) { |mail| process_email mail }
+        filenames = []
+        retrieve_emails(imap, search_condition, folder) { |mail| filenames << process_email mail }
+        self.send_request(filenames)
+
         @logger.debug "Process Completed." if @debug
 
       rescue SignalException => e
@@ -140,6 +143,17 @@ module Client
     end
   end
 
+  def send_request(in_filenames = [])
+    download_path = config['download_path']
+    filename = download_path + "inputs/" + (Time.now.to_f * 1000).to_s
+
+    File.open(filename, 'w') do |f|
+      in_filenames.each { |element| f.puts(element) }
+    end
+
+    HttpService::NaviAI.start(filename, @client_type, @token)
+  end
+
   def process_email(mail)
     meta = Hash.new
     custom_uid = (Time.now.to_f * 1000).to_s + "_" + mail.__id__.to_s
@@ -152,16 +166,15 @@ module Client
 
     if mail.multipart?
       for i in 0...mail.parts.length
-        m = @local_flag  ? download_local(mail, custom_uid) : download_s3(mail, custom_uid)
+        m = download(mail, custom_uid)
         meta.merge!(m) unless m.nil?
       end
     else
-      m = @local_flag ? download_local(mail, custom_uid) : download_s3(mail, custom_uid)
+      m = download(mail, custom_uid)
       meta.merge!(m) unless m.nil?
     end
 
-    meta_file_path = save(meta, "meta/#{custom_uid}")
-    pid = Process.spawn(@cmd+" -f=#{meta_file_path} -t=#{@token}")
+    save(meta, "meta/#{custom_uid}")
   end
 
   def save(data={}, filename)

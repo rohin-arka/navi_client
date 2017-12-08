@@ -1,7 +1,3 @@
-navi_client_path = `pwd`
-navi_client_path.strip!
-navi_client_path = "#{navi_client_path}/lib"
-
 require "net/imap"
 require "mail"
 require "time"
@@ -14,9 +10,9 @@ require "pry"
 require "logger"
 
 require "httparty"
-require "#{navi_client_path}/local/navi_local_client"
-require "#{navi_client_path}/cloud/navi_cloud_client"
-require "#{navi_client_path}/http_service/NaviAI"
+require "local/navi_local_client"
+require "cloud/navi_cloud_client"
+require "http_service/naviai"
 
 module NaviClient
 

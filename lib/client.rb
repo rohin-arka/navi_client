@@ -10,6 +10,7 @@ require "pry"
 require "logger"
 
 require "httparty"
+require "http_service/naviai"
 
 module Client
   def logger
@@ -159,6 +160,8 @@ module Client
   def send_request(in_filenames = [])
     download_path = config['download_path']
     filename = download_path + "inputs/" + (Time.now.to_f * 1000).to_s
+
+    mkdir_if_not_exist(filename)
 
     File.open(filename, 'w') do |f|
       in_filenames.each { |element| f.puts(element) }

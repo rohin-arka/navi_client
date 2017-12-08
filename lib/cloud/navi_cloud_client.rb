@@ -3,7 +3,7 @@ require Gem::Specification.find_by_name("navi_client").gem_dir+"/lib/client"
 module NaviClient
   class Cloud
     include Client
-    def initialize
+    def initialize(sso_web_url = "http://localhost:3008/")
      # flag to print Ruby library debug info (very detailed)
      @net_imap_debug = false
 
@@ -19,7 +19,6 @@ module NaviClient
 
      # naviai command
      @cmd = 'naviai'
-
      # authentication token received from sso_web used to authenticate the request to database_api
      @token = nil
    end

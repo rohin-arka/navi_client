@@ -9,7 +9,8 @@ module Client
   # login to the navi-cloud and get the authentication token
   #
   def login
-    provider_url = "http://localhost:3008/oauth/token"
+    url = "#{@sso_web_url/oauth/token}"
+    provider_url = url
     @token = HTTParty.post(provider_url,
                   body: {
                     client_id: config["uid"], # get from sso_web application
@@ -69,20 +70,16 @@ module Client
         @logger.debug "\nProcessing #{message_ids.count} mails.\n"
       end
     end
-
     message_ids.each_with_index do |message_id, i|
       # fetch all the email contents
       data = imap.fetch(message_id, "RFC822")
-
       data.each do |d|
         msg = d.attr['RFC822']
         # instantiate a Mail object to avoid further IMAP parameters nightmares
         mail = Mail.read_from_string msg
 
         # call the block with mail object as param
-        start = (i == 0)
-        last = (i == message_ids-1)
-        process_email_block.call mail, start, last
+        process_email_block.call mail
 
         # mark as read
         if @mark_as_read
@@ -143,7 +140,7 @@ module Client
     end
   end
 
-  def process_email(mail, start, last)
+  def process_email(mail)
     meta = Hash.new
     custom_uid = (Time.now.to_f * 1000).to_s + "_" + mail.__id__.to_s
 
@@ -165,8 +162,6 @@ module Client
 
     meta_file_path = save(meta, "meta/#{custom_uid}")
     pid = Process.spawn(@cmd+" -f=#{meta_file_path} -t=#{@token}")
-
-    HTTPService::NaviAI.start(start, last)
   end
 
   def save(data={}, filename)

@@ -1,8 +1,7 @@
 require Gem::Specification.find_by_name("navi_client").gem_dir+"/lib/client"
 module NaviClient
-  include Client
   class Local
-
+    include Client
     def initialize
      # flag to print Ruby library debug info (very detailed)
      @net_imap_debug = false

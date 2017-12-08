@@ -1,6 +1,7 @@
 navi_client_path = `pwd`
 navi_client_path.strip!
 navi_client_path = "#{navi_client_path}/lib"
+require "#{navi_client_path}/navi_client/version"
 
 require "net/imap"
 require "mail"

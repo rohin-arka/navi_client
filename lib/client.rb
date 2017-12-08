@@ -212,6 +212,6 @@ module Client
   end
 
   def config
-    YAML.load_file('/var/navi/config.yml')
+    YAML.load_file(ENV['HOME'] + '/.navi/config.yml')
   end
 end

@@ -169,8 +169,6 @@ module Client
     HTTPService::NaviAI.start(start, last)
   end
 
-  private
-
   def save(data={}, filename)
     download_path = config['download_path']
     filepath = download_path + filename + ".yml"

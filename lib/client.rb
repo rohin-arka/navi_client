@@ -117,7 +117,7 @@ module Client
         # We're out, which means there are some emails ready for us.
         # Go do a search for UNSEEN and fetch them.
         filenames = []
-        retrieve_emails(imap, search_condition, folder) { |mail| filenames << process_email mail }
+        retrieve_emails(imap, search_condition, folder) { |mail| filenames << process_email(mail)}
         self.send_request(filenames)
 
         @logger.debug "Process Completed." if @debug

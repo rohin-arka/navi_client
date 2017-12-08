@@ -1,4 +1,4 @@
-require './lib/client'
+require Gem::Specification.find_by_name("navi_client").gem_dir+"/lib/client"
 
 module NaviClient
   include Client

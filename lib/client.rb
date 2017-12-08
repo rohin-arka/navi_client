@@ -1,3 +1,16 @@
+require "net/imap"
+require "mail"
+require "time"
+
+require 'base64'
+require 'fileutils'
+require 'yaml'
+
+require "pry"
+require "logger"
+
+require "httparty"
+
 module Client
   def logger
     @logger

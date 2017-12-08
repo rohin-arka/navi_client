@@ -167,7 +167,7 @@ module Client
       in_filenames.each { |element| f.puts(element) }
     end
 
-    HttpService::NaviAI.start(filename, @client_type, @token)
+    HTTPService::NaviAI.start(filename, @client_type, @token)
   end
 
   def process_email(mail)

@@ -1,6 +1,8 @@
-module Navi
-  class CloudClient
-    include ::NaviClient
+require './lib/client'
+
+module NaviClient
+  include Client
+  class Cloud
 
     def initialize
      # flag to print Ruby library debug info (very detailed)

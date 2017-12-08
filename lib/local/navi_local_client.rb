@@ -1,6 +1,7 @@
-module Navi
-  class LocalClient
-    include ::NaviClient
+require './lib/client'
+module NaviClient
+  include Client
+  class Local
 
     def initialize
      # flag to print Ruby library debug info (very detailed)

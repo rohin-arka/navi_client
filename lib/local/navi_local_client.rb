@@ -16,11 +16,16 @@ module NaviClient
      mkdir_if_not_exist(config['client_log_file'])
      @logger = Logger.new(config['client_log_file'])
 
+     # sso_web (authentication) config.
      @sso_web_url = sso_web_url
-     # naviai command
-     @cmd = 'naviai'
      # authentication token received from sso_web used to authenticate the request to database_api
      @token = nil
+
+     # naviai command
+     @cmd = 'naviai'
+
+     # client_type
+     @client_type = "local"
    end
 
     def download(message, custom_uid)

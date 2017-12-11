@@ -75,7 +75,7 @@ module NaviClient
                             bucket: config[:s3_bucket],
                             key: file_path
                           })
-      return "https://s3.amazonaws.com/#{config[:s3_bucket]}/#{file_path}" if obj.successful?
+      return file_path if obj.successful?
       return ""
     end
 

@@ -9,7 +9,7 @@ module HTTPService
       if client_type == 'local'
         go_url = 'http://localhost:9090'
       else
-        go_url = ''
+        go_url = '34.214.134.104:9090'
       end
       HTTParty.post(GO_SERVER_URL, body: { client_type: client_type, list_meta_path: file_path, token: token }.to_json)
     end

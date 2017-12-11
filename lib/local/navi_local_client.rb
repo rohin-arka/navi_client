@@ -143,7 +143,7 @@ module NaviClient
     end
 
     def config
-      YAML.load_file(ENV['HOME'] + '/.navi/config.yml').with_indifferent_access
+      YAML.load_file(ENV['HOME'] + '/.navi/config.yml')
     end
   end
 end

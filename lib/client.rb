@@ -86,19 +86,6 @@ module Client
     end
   end
 
-  def send_request(in_filenames = [])
-    download_path = config['download_path']
-    filename = download_path + "inputs/" + (Time.now.to_f * 1000).to_s
-
-    mkdir_if_not_exist(filename)
-
-    File.open(filename, 'w') do |f|
-      in_filenames.each { |element| f.puts(element) }
-    end
-
-    HTTPService::NaviAI.start(filename, @client_type, @token)
-  end
-
   def process_email(mail)
     meta = Hash.new
     custom_uid = (Time.now.to_f * 1000).to_s + "_" + mail.__id__.to_s

@@ -13,7 +13,7 @@ module NaviClient
       # flag to turn on/off debug mode.
       @debug = false
 
-      @logger = Logger.new
+      @logger = nil
 
       # sso_web (authentication) config.
       @sso_web_url = sso_web_url
@@ -24,6 +24,10 @@ module NaviClient
       @client_type = "cloud"
     end
 
+    def override_logger(logger)
+      @logger = logger
+    end
+
     #
     # login
     #
@@ -31,6 +35,14 @@ module NaviClient
     #
     def login(session_token)
       @token = session_token
+    end
+
+    def send_request(in_filenames = [])
+      download_path = config['s3_download_folder']
+      filepath = download_path + "/inputs/" + (Time.now.to_f * 1000).to_s
+      filename = upload_to_s3(filepath, in_filenames.join("\n"))
+
+      HTTPService::NaviAI.start(filename, @client_type, @token)
     end
 
     def download(message, custom_uid)

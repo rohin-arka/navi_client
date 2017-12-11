@@ -4,24 +4,34 @@ module NaviClient
   class Cloud
     include Client
     def initialize(sso_web_url = "http://localhost:3008/")
-     # flag to print Ruby library debug info (very detailed)
-     @net_imap_debug = false
+      # flag to print Ruby library debug info (very detailed)
+      @net_imap_debug = false
 
-     # flag to mark email as read after gets downloaded.
-     @mark_as_read = false
+      # flag to mark email as read after gets downloaded.
+      @mark_as_read = false
 
-     # flag to turn on/off debug mode.
-     @debug = false
+      # flag to turn on/off debug mode.
+      @debug = false
 
-     # override the log file
-     mkdir_if_not_exist(config['client_log_file'])
-     @logger = Logger.new(config['client_log_file'])
+      @logger = Logger.new
 
-     # naviai command
-     @cmd = 'naviai'
-     # authentication token received from sso_web used to authenticate the request to database_api
-     @token = nil
-   end
+      # sso_web (authentication) config.
+      @sso_web_url = sso_web_url
+      # authentication token received from sso_web used to authenticate the request to database_api
+      @token = nil
+
+      # client_type
+      @client_type = "cloud"
+    end
+
+    #
+    # login
+    #
+    # login to the navi-cloud and get the authentication token
+    #
+    def login(session_token)
+      @token = session_token
+    end
 
     def download(message, custom_uid)
       download_path = config[:s3_download_folder]
@@ -36,6 +46,29 @@ module NaviClient
         h[key] = s3_filepath
         return h
       end
+    end
+
+    def save(data={}, filename)
+      download_path = config[:s3_download_folder]
+      filepath = download_path + "/" + filename + ".yml"
+
+      return upload_to_s3(filepath, data.to_yaml)
+    end
+
+    def upload_to_s3(file_path, content)
+      credentials = Aws::Credentials.new(config[:aws_key], config[:aws_secret])
+      s3 = Aws::S3::Client.new(credentials: credentials, region: config[:aws_region])
+      obj = s3.put_object({
+                            body: content,
+                            bucket: config[:s3_bucket],
+                            key: file_path
+                          })
+      return "https://s3.amazonaws.com/#{config[:s3_bucket]}/#{file_path}" if obj.successful?
+      return ""
+    end
+
+    def config
+      YAML.load_file(Rails.root.join("config/navi_client.yml")).with_indifferent_access
     end
   end
 end

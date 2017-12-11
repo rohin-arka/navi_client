@@ -18,23 +18,6 @@ module Client
   end
 
   #
-  # login
-  #
-  # login to the navi-cloud and get the authentication token
-  #
-  def login
-    url = "#{@sso_web_url}/oauth/token"
-    provider_url = url
-    @token = HTTParty.post(provider_url,
-                  body: {
-                    client_id: config["uid"], # get from sso_web application
-                    client_secret: config["secret_key"],
-                    grant_type: "client_credentials"
-                  }
-                 )['access_token']
-  end
-
-  #
   # imap_connection
   #
   # connect the app with imap server
@@ -103,60 +86,6 @@ module Client
     end
   end
 
-  #
-  # idle_loop
-  #
-  # check for any further mail with "real-time" responsiveness.
-  # retrieve any mail from a folder, following specified search condition
-  # for any mail retrieved call a specified block
-  #
-  def idle_loop(imap, search_condition, folder, server, username, password)
-
-    @logger.info "\nwaiting new mails (IDLE loop)..."
-
-    loop do
-      begin
-        imap.select folder
-        imap.idle do |resp|
-
-          # You'll get all the things from the server. For new emails (EXISTS)
-          if resp.kind_of?(Net::IMAP::UntaggedResponse) and resp.name == "EXISTS"
-
-            @logger.debug resp.inspect if @debug
-            # Got something. Send DONE. This breaks you out of the blocking call
-            imap.idle_done
-          end
-        end
-
-        # We're out, which means there are some emails ready for us.
-        # Go do a search for UNSEEN and fetch them.
-        filenames = []
-        retrieve_emails(imap, search_condition, folder) { |mail| filenames << process_email(mail)}
-        self.send_request(filenames)
-
-        @logger.debug "Process Completed." if @debug
-
-      rescue SignalException => e
-        # http://stackoverflow.com/questions/2089421/capturing-ctrl-c-in-ruby
-        @logger.info "Signal received at #{time_now}: #{e.class}. #{e.message}"
-        shutdown imap
-
-      rescue Net::IMAP::Error => e
-        @logger.error "Net::IMAP::Error at #{time_now}: #{e.class}. #{e.message}"
-
-        # timeout ? reopen connection
-        imap = imap_connection(server, username, password) #if e.message == 'connection closed'
-        @logger.info "reconnected to server: #{server}"
-
-      rescue Exception => e
-        @logger.error "Something went wrong at #{time_now}: #{e.class}. #{e.message}"
-
-        imap = imap_connection(server, username, password)
-        @logger.info "reconnected to server: #{server}"
-      end
-    end
-  end
-
   def send_request(in_filenames = [])
     download_path = config['download_path']
     filename = download_path + "inputs/" + (Time.now.to_f * 1000).to_s
@@ -193,25 +122,8 @@ module Client
     save(meta, "meta/#{custom_uid}")
   end
 
-  def save(data={}, filename)
-    download_path = config['download_path']
-    filepath = download_path + filename + ".yml"
-
-    mkdir_if_not_exist(filepath)
-
-    File.write(filepath, data.to_yaml)
-    return filepath
-  end
-
   def encrypt(data)
     Base64.encode64(data)
-  end
-
-  def mkdir_if_not_exist(filepath)
-    dirname = File.dirname(filepath)
-    unless File.directory?(dirname)
-      FileUtils.mkdir_p(dirname)
-    end
   end
 
   def time_now
@@ -225,9 +137,5 @@ module Client
 
     @logger.info "#{$0} has ended (crowd applauds)"
     exit 0
-  end
-
-  def config
-    YAML.load_file(ENV['HOME'] + '/.navi/config.yml')
   end
 end

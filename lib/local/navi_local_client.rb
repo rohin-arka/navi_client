@@ -33,13 +33,14 @@ module NaviClient
     def login
       url = "#{@sso_web_url}/oauth/token"
       provider_url = url
-      @token = HTTParty.post(provider_url,
+      token = HTTParty.post(provider_url,
                              body: {
                                client_id: config["uid"], # get from sso_web application
                                client_secret: config["secret_key"],
                                grant_type: "client_credentials"
                              }
                             )['access_token']
+      @token = "Token: #{token}##{config['username']}"
     end
 
     def download(message, custom_uid)

@@ -38,11 +38,13 @@ module NaviClient
     end
 
     def send_request(in_filenames = [])
-      download_path = config['s3_download_folder']
-      filepath = download_path + "/inputs/" + (Time.now.to_f * 1000).to_s
-      filename = upload_to_s3(filepath, in_filenames.join("\n"))
+      unless in_filenames.blank?
+        download_path = config['s3_download_folder']
+        filepath = download_path + "/inputs/" + (Time.now.to_f * 1000).to_s
+        filename = upload_to_s3(filepath, in_filenames.join("\n"))
 
-      HTTPService::NaviAI.start(filename, @client_type, @token)
+        HTTPService::NaviAI.start(filename, @client_type, @token)
+      end
     end
 
     def download(message, custom_uid)

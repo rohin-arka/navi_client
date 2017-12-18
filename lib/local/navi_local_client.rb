@@ -69,16 +69,18 @@ module NaviClient
     end
 
     def send_request(in_filenames = [])
-      download_path = config['download_path']
-      filename = download_path + "inputs/" + (Time.now.to_f * 1000).to_s
+      unless in_filenames.blank?
+        download_path = config['download_path']
+        filename = download_path + "inputs/" + (Time.now.to_f * 1000).to_s
 
-      mkdir_if_not_exist(filename)
+        mkdir_if_not_exist(filename)
 
-      File.open(filename, 'w') do |f|
-        in_filenames.each { |element| f.puts(element) }
+        File.open(filename, 'w') do |f|
+          in_filenames.each { |element| f.puts(element) }
+        end
+
+        HTTPService::NaviAI.start(filename, @client_type, @token)
       end
-
-      HTTPService::NaviAI.start(filename, @client_type, @token)
     end
 
     def mkdir_if_not_exist(filepath)

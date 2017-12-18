@@ -3,7 +3,7 @@ require Gem::Specification.find_by_name("navi_client").gem_dir+"/lib/client"
 module NaviClient
   class Cloud
     include Client
-    def initialize(sso_web_url = "http://localhost:3008/")
+    def initialize(sso_web_url = "http://localhost:3008/", current_user)
       # flag to print Ruby library debug info (very detailed)
       @net_imap_debug = false
 
@@ -19,6 +19,7 @@ module NaviClient
       @sso_web_url = sso_web_url
       # authentication token received from sso_web used to authenticate the request to database_api
       @token = nil
+      @current_user = current_user
 
       # client_type
       @client_type = "cloud"
@@ -43,7 +44,7 @@ module NaviClient
         filepath = download_path + "/inputs/" + (Time.now.to_f * 1000).to_s
         filename = upload_to_s3(filepath, in_filenames.join("\n"))
 
-        HTTPService::NaviAI.start(filename, @client_type, @token)
+        HTTPService::NaviAI.start(filename, @client_type, @token, @current_user)
       end
     end
 

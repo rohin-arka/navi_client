@@ -13,6 +13,10 @@ require "httparty"
 require "http_service/naviai"
 
 module Client
+  def logger
+    @logger
+  end
+
   #
   # imap_connection
   #

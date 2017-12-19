@@ -13,10 +13,6 @@ require "httparty"
 require "http_service/naviai"
 
 module Client
-  def logger
-    @logger
-  end
-
   #
   # imap_connection
   #
@@ -33,10 +29,12 @@ module Client
 
     @logger.debug("imap capabilities: #{capabilities.join(',')}") if @debug
 
-    unless capabilities.include? "IDLE"
-      @logger.info "'IDLE' IMAP capability not available in server: #{server}"
-      imap.disconnect
-      exit
+    if @client_type == 'local'
+      unless capabilities.include? "IDLE"
+        @logger.info "'IDLE' IMAP capability not available in server: #{server}"
+        imap.disconnect
+        exit
+      end
     end
 
     # login

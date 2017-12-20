@@ -6,7 +6,6 @@ require 'base64'
 require 'fileutils'
 require 'yaml'
 
-require "pry"
 require "logger"
 
 require "httparty"
@@ -100,7 +99,7 @@ module Client
 
     if mail.multipart?
       for i in 0...mail.parts.length
-        m = download(mail, custom_uid)
+        m = download(mail.parts[i], custom_uid)
         meta.merge!(m) unless m.nil?
       end
     else

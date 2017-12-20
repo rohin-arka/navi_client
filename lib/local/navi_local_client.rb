@@ -1,4 +1,5 @@
-require Gem::Specification.find_by_name("navi_client").gem_dir+"/lib/client"
+require_relative '../client'
+
 module NaviClient
   class Local
     include Client
@@ -70,7 +71,7 @@ module NaviClient
     end
 
     def send_request(in_filenames = [])
-      unless in_filenames.blank?
+      unless in_filenames.empty?
         download_path = config['download_path']
         filename = download_path + "inputs/" + (Time.now.to_f * 1000).to_s
 

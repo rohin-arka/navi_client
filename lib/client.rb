@@ -92,12 +92,11 @@ module Client
     custom_uid = (Time.now.to_f * 1000).to_s + "_" + mail.__id__.to_s
 
     invalid_to_email = mail.to.nil? || !mail.to.is_a?(Array)
-    return '' if invalid_to_email
 
     invalid_cc_email = mail.cc.nil? || !mail.cc.is_a?(Array)
 
     meta["from"] = mail.from.first
-    meta["to"] = mail.to.join(";")
+    meta["to"] = invalid_to_email ? mail.to : mail.to.join(";")
     meta["cc"] = mail.cc.join(";") unless invalid_cc_email
     meta["subject"] = mail.subject
     meta["date"] = mail.date.to_s

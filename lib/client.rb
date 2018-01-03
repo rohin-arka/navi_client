@@ -95,7 +95,7 @@ module Client
 
     invalid_cc_email = mail.cc.nil? || !mail.cc.is_a?(Array)
 
-    meta["from"] = mail.from.first
+    meta["from"] = mail.from.first unless mail.from.nil?
     meta["to"] = invalid_to_email ? mail.to : mail.to.join(";")
     meta["cc"] = mail.cc.join(";") unless invalid_cc_email
     meta["subject"] = mail.subject
